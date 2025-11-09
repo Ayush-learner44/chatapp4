@@ -7,7 +7,7 @@ The project is deployed on **Render** at the following URL:
 [https://chatapp4-gc9d.onrender.com](https://chatapp4-gc9d.onrender.com)
 
 > Note: Since this is hosted on the free tier of Render, the server may take **30–60 seconds to “wake up”** if it has been idle. Please allow some time for the first request to load.
-```
+
 # Chat Application (Assignment 3)
 
 ## Project Overview
@@ -22,12 +22,7 @@ It allows users to:
 
 The application is structured with a Next.js frontend, API routes for backend logic, a custom server with Socket.IO for real-time communication, and MongoDB for persistence.
 
----
-```
 
----
-```
-```
 ## Steps to Install and Run Locally
 
 ### 1. Clone the repository
