@@ -21,6 +21,7 @@ function ChatPageInner() {
     const [message, setMessage] = useState("");
     const [chat, setChat] = useState([]);
     const [users, setUsers] = useState([]);
+    const [onlineUsers, setOnlineUsers] = useState([]);
 
     const filteredChat = chat.filter(
         (c) =>
@@ -51,6 +52,8 @@ function ChatPageInner() {
             .then(data => setUsers(data))
             .catch(err => console.error("Failed to fetch users", err));
     }, []);
+
+
 
     //initialize only once
     // useEffect(() => {
@@ -126,6 +129,15 @@ function ChatPageInner() {
                 setConnected(false);
             });
 
+            // Ask server for online users
+            socketRef.current.emit("get-online-users");
+
+            // ✅ Just listen for online-users updates (no need to emit anymore)
+            socketRef.current.on("online-users", (list) => {
+                setOnlineUsers(list);
+            });
+
+
             socketRef.current.on("disconnect", () => {
                 console.log("❌ Socket disconnected");
                 setChat((prev) => [
@@ -138,6 +150,7 @@ function ChatPageInner() {
 
         return () => {
             if (socketRef.current) {
+                socketRef.current.off("online-users");
                 socketRef.current.off("joined");
                 socketRef.current.off("receive-message");
                 socketRef.current.off("error-message");
@@ -226,7 +239,7 @@ function ChatPageInner() {
             <div className="chat-center">
                 <div className="chat-card">
                     <div className="recipient-row">
-                        <input
+                        {/* <input
                             list="user-list"
                             placeholder="Recipient"
                             value={recipient}
@@ -239,7 +252,25 @@ function ChatPageInner() {
                                 .map((u, i) => (
                                     <option key={i} value={u} />
                                 ))}
-                        </datalist>
+                        </datalist> */}
+
+                        <select
+                            value={recipient}
+                            onChange={(e) => setRecipient(e.target.value)}
+                            className="recipient-input"
+                        >
+                            <option value="" disabled>
+                                Select recipient
+                            </option>
+                            {users
+                                .filter((u) => u !== username)
+                                .map((u, i) => (
+                                    <option key={i} value={u}>
+                                        {u} {onlineUsers.includes(u) ? "🟢 online" : "⚪ offline"}
+                                    </option>
+                                ))}
+                        </select>
+
 
 
 

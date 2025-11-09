@@ -42,25 +42,26 @@ app.prepare().then(() => {
     io.on("connection", (socket) => {
         console.log("✅ Socket connected:", socket.id);
 
+        const broadcastOnlineUsers = () => {
+            io.emit("online-users", Object.keys(users));
+        };
+
         // Register user
         socket.on("register-user", (username) => {
             users[username] = socket.id;
             socket.username = username;
             console.log(`Registered ${username} with socket ${socket.id}`);
+            broadcastOnlineUsers(); // push update
         });
 
         socket.on("join", ({ sender, receiver }) => {
             socket.emit("joined", { with: receiver, time: new Date().toISOString() });
         });
 
-
-
-
-        // Handle leave (disconnect from recipient but keep socket alive)
-        socket.on("leave", ({ sender, receiver }) => {
-
-
+        socket.on("get-online-users", () => {
+            socket.emit("online-users", Object.keys(users));
         });
+
 
         // Handle private messaging
         socket.on("send-message", async ({ sender, receiver, text }) => {
@@ -92,6 +93,7 @@ app.prepare().then(() => {
             if (socket.username) {
                 delete users[socket.username];
                 console.log(`❌ ${socket.username} disconnected`);
+                broadcastOnlineUsers(); // push update
             }
         });
     });
