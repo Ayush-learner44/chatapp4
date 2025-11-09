@@ -1,15 +1,20 @@
-Got it — your draft is solid, it just needs proper Markdown formatting and consistent sectioning so it looks clean on GitHub. Here’s the polished version you can copy‑paste directly into your `README.md`:
 
----
 
 ```markdown
+## Live Deployment
+The project is deployed on **Render** at the following URL:  
+[https://chatapp4-gc9d.onrender.com](https://chatapp4-gc9d.onrender.com)
+
+> Note: Since this is hosted on the free tier of Render, the server may take **30–60 seconds to “wake up”** if it has been idle. Please allow some time for the first request to load.
+
 # Chat Application (Assignment 3)
 
 ## Project Overview
 This project is a real-time chat application built using **Next.js**, **Node.js**, **Socket.IO**, and **MongoDB**.  
 It allows users to:
-- Register and log in with a username .
+- Register and log in with a username and password.
 - View a list of registered users.
+- View a status of registered users (online/offline).
 - Connect with another user and exchange private messages in real time.
 - View chat history with timestamps.
 - Delete chat history when needed.
@@ -18,11 +23,6 @@ The application is structured with a Next.js frontend, API routes for backend lo
 
 ---
 ```
-## Live Deployment
-The project is deployed on **Render** at the following URL:  
-[https://chatapp2-of46.onrender.com/](https://chatapp2-of46.onrender.com/)
-
-> Note: Since this is hosted on the free tier of Render, the server may take **30–60 seconds to “wake up”** if it has been idle. Please allow some time for the first request to load.
 
 ---
 ```
@@ -70,12 +70,14 @@ Open [http://localhost:3000](http://localhost:3000) in your browser.
 Here are four different views of the chat interface:
 
 ![Chat Screenshot 1](public/screenshots/chat1.png)
+Shows offline/online status
 ![Chat Screenshot 2](public/screenshots/chat2.png)
 ![Chat Screenshot 3](public/screenshots/chat3.png)
 ![Chat Screenshot 4](public/screenshots/chat4.png)
 
 ### MongoDB Dashboard
 ![MongoDB Dashboard](public/screenshots/mongodb.png)
+![MongoDB Dashboard](public/screenshots/mongodb-users.png)
 
 
 ---
