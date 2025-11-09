@@ -58,12 +58,13 @@ function ChatPageInner() {
             });
 
             socketRef.current.on("receive-message", (data) => {
-                if (data.receiver === username || data.sender === username) {
-                    setChat((prev) => [
-                        ...prev,
-                        { sender: data.sender, text: data.text, time: data.time || new Date().toISOString() }
-                    ]);
-                }
+                console.log("receive-message event received", data);
+
+                setChat((prev) => [
+                    ...prev,
+                    { sender: data.sender, text: data.text, time: data.time || new Date().toISOString() }
+                ]);
+
             });
 
 
@@ -158,8 +159,6 @@ function ChatPageInner() {
         if (res.ok) {
             console.log("emitting send-message", msg);
             socketRef.current.emit("send-message", msg);
-            // ✅ Immediately add to chat so you see it
-            setChat((prev) => [...prev, { sender: username, text: message, time: msg.time }]);
 
             setMessage("");
         } else {
