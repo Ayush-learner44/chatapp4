@@ -33,7 +33,6 @@ app.prepare().then(() => {
         handler(req, res);
     });
 
-    // Global users map (runtime only, not MongoDB)
     const users = {}; // { username: socket.id }
 
     const io = new Server(httpServer, {
@@ -43,11 +42,31 @@ app.prepare().then(() => {
     io.on("connection", (socket) => {
         console.log("✅ Socket connected:", socket.id);
 
-        // Register user on connection
+        // Register user
         socket.on("register-user", (username) => {
             users[username] = socket.id;
             socket.username = username;
             console.log(`Registered ${username} with socket ${socket.id}`);
+        });
+
+        socket.on("join", ({ sender, receiver }) => {
+            console.log(`${sender} joined chat with ${receiver}`);
+            socket.emit("joined", { with: receiver, time: new Date().toISOString() });
+
+            const receiverSocketId = users[receiver];
+            if (receiverSocketId) {
+                io.to(receiverSocketId).emit("user-joined", { username: sender });
+            }
+        });
+
+
+        // Handle leave (disconnect from recipient but keep socket alive)
+        socket.on("leave", ({ sender, receiver }) => {
+            console.log(`${sender} left chat with ${receiver}`);
+            const receiverSocketId = users[receiver];
+            if (receiverSocketId) {
+                io.to(receiverSocketId).emit("user-left", { username: sender });
+            }
         });
 
         // Handle private messaging
@@ -57,7 +76,6 @@ app.prepare().then(() => {
                 const db = c.db("chatapp");
                 const messages = db.collection("messages");
 
-                // Store message in MongoDB
                 await messages.insertOne({
                     sender,
                     receiver,
@@ -65,14 +83,18 @@ app.prepare().then(() => {
                     timestamp: new Date(),
                 });
 
-                // Deliver to receiver if online
+                const msgPayload = {
+                    sender,
+                    receiver,
+                    text,
+                    time: new Date().toISOString(),
+                };
+
+                socket.emit("receive-message", msgPayload);
+
                 const receiverSocketId = users[receiver];
                 if (receiverSocketId) {
-                    io.to(receiverSocketId).emit("receive-message", {
-                        sender,
-                        text,
-                        time: new Date().toISOString(),
-                    });
+                    io.to(receiverSocketId).emit("receive-message", msgPayload);
                 }
             } catch (err) {
                 console.error("Message error:", err);

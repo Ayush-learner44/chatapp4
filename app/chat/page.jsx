@@ -2,7 +2,7 @@
 
 import { useEffect, useState, useRef, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import io from "socket.io-client";
+import { io } from "socket.io-client";
 import "./chat.css";
 
 export const dynamic = "force-dynamic";
@@ -45,51 +45,83 @@ function ChatPageInner() {
 
     // Initialize socket once
     useEffect(() => {
-        socketRef.current = io();
+        if (!socketRef.current) {
+            socketRef.current = io();
 
-        socketRef.current.on("connect", () => {
-            if (username) socketRef.current.emit("register-user", username);
-        });
-
-        socketRef.current.on("joined", (data) => {
-            setChat((prev) => [
-                ...prev,
-                { sender: "system", text: `Connected with ${data.with}`, time: new Date().toISOString() }
-            ]);
-            setConnected(true);
-        });
-
-        socketRef.current.on("receive-message", (data) => {
-            if (
-                (data.sender === recipient && data.receiver === username) ||
-                (data.sender === username && data.receiver === recipient)
-            ) {
+            socketRef.current.on("joined", (data) => {
+                console.log("joined event received", data);
                 setChat((prev) => [
                     ...prev,
-                    { sender: data.sender, text: data.text, time: data.time || new Date().toISOString() }
+                    { sender: "system", text: `Connected with ${data.with}`, time: data.time || new Date().toISOString() }
                 ]);
-            }
-        });
+                setConnected(true);
+            });
 
-        socketRef.current.on("error-message", (data) => {
-            alert(data.text);
-            setConnected(false);
-        });
+            socketRef.current.on("receive-message", (data) => {
+                if (data.receiver === username || data.sender === username) {
+                    setChat((prev) => [
+                        ...prev,
+                        { sender: data.sender, text: data.text, time: data.time || new Date().toISOString() }
+                    ]);
+                }
+            });
+
+
+            socketRef.current.on("error-message", (data) => {
+                alert(data.text);
+                setConnected(false);
+            });
+
+            socketRef.current.on("disconnect", () => {
+                console.log("❌ Socket disconnected");
+                setConnected(false);
+            });
+
+            socketRef.current.on("disconnect", () => {
+                setChat((prev) => [
+                    ...prev,
+                    { sender: "system", text: "You disconnected", time: new Date().toISOString() }
+                ]);
+                setConnected(false);
+            });
+
+            socketRef.current.on("user-left", (data) => {
+                setChat((prev) => [
+                    ...prev,
+                    { sender: "system", text: `${data.username} left the chat`, time: new Date().toISOString() }
+                ]);
+            });
+
+            socketRef.current.on("user-joined", (data) => {
+                setChat((prev) => [
+                    ...prev,
+                    { sender: "system", text: `${data.username} joined the chat`, time: new Date().toISOString() }
+                ]);
+            });
+
+        }
 
         return () => {
             socketRef.current && socketRef.current.disconnect();
         };
-    }, [username, recipient]);
+    }, []);
 
+    // ✅ Register user once username is set
+    useEffect(() => {
+        if (socketRef.current && username) {
+            console.log("registering user", username);
+            socketRef.current.emit("register-user", username);
+        }
+    }, [username]);
+
+    // ✅ Connect handler
     const connect = async () => {
         if (!recipient.trim()) {
             alert("Enter a recipient username");
             return;
         }
 
-        const res = await fetch(
-            `/api/message?user1=${encodeURIComponent(username)}&user2=${encodeURIComponent(recipient)}`
-        );
+        const res = await fetch(`/api/message?user1=${encodeURIComponent(username)}&user2=${encodeURIComponent(recipient)}`);
         if (res.ok) {
             const history = await res.json();
             setChat(history.map((m) => ({
@@ -97,16 +129,17 @@ function ChatPageInner() {
                 text: m.text,
                 time: m.time
             })));
-        } else {
-            const data = await res.json();
-            alert(data.message || "Could not load history");
-            return;
         }
 
-        socketRef.current.emit("join", { from: username, to: recipient });
+        console.log("emitting join", { sender: username, receiver: recipient });
+        socketRef.current.emit("join", { sender: username, receiver: recipient });
     };
 
     const disconnect = () => {
+        if (socketRef.current && connected) {
+            console.log("emitting leave", { sender: username, receiver: recipient });
+            socketRef.current.emit("leave", { sender: username, receiver: recipient });
+        }
         setConnected(false);
         setRecipient("");
         setChat([]);
@@ -123,7 +156,11 @@ function ChatPageInner() {
         });
 
         if (res.ok) {
+            console.log("emitting send-message", msg);
             socketRef.current.emit("send-message", msg);
+            // ✅ Immediately add to chat so you see it
+            setChat((prev) => [...prev, { sender: username, text: message, time: msg.time }]);
+
             setMessage("");
         } else {
             const data = await res.json();
@@ -156,7 +193,7 @@ function ChatPageInner() {
                         />
                         <datalist id="user-list">
                             {users
-                                .filter((u) => u !== username)   // exclude yourself
+                                .filter((u) => u !== username)
                                 .map((u, i) => (
                                     <option key={i} value={u} />
                                 ))}
@@ -243,3 +280,7 @@ export default function ChatPage() {
         </Suspense>
     );
 }
+
+
+
+
