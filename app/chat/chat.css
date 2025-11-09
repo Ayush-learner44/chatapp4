@@ -1,0 +1,285 @@
+/* Make chat-page responsive */
+.chat-page {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    background: hsl(220, 20%, 95%);
+    font-family: sans-serif;
+    padding: 1rem;
+    box-sizing: border-box;
+    overflow-x: hidden;
+    /* ✅ stop horizontal overflow */
+    align-items: stretch;
+    /* ✅ don’t center everything */
+}
+
+.top-bar {
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    /* ✅ keep Home + username on left */
+    gap: 0.5rem;
+}
+
+.home-button {
+    background-color: hsl(0, 0%, 40%);
+    /* medium gray */
+    color: white;
+    border: none;
+    padding: 6px 14px;
+    border-radius: 6px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+.home-button:hover {
+    background-color: hsl(0, 0%, 25%);
+    /* darker gray on hover */
+}
+
+/* Inline username field in top bar */
+.top-username-input {
+    width: 10rem;
+    padding: 0.4rem;
+    border: 1px solid hsl(0, 0%, 75%);
+    border-radius: 6px;
+    color: hsl(220, 15%, 20%);
+    background: hsl(0, 0%, 100%);
+}
+
+.top-username-input::placeholder {
+    color: hsl(220, 10%, 60%);
+}
+
+.profile-label {
+    font-weight: 700;
+    /* bolder text */
+    color: hsl(0, 0%, 20%);
+    /* dark gray for contrast */
+    background-color: hsl(0, 0%, 90%);
+    /* light gray background */
+    padding: 4px 10px;
+    border-radius: 12px;
+    font-size: 0.95rem;
+}
+
+
+.profile-badge {
+    background: #f0f0f0;
+    padding: 4px 10px;
+    border-radius: 12px;
+    font-size: 0.9rem;
+    color: #333;
+}
+
+
+/* Chat card should shrink on small screens */
+.chat-card {
+    background: hsl(0, 0%, 100%);
+    border-radius: 12px;
+    box-shadow: 0 4px 12px hsl(0, 0%, 0%, 0.15);
+    width: 100%;
+    max-width: 650px;
+    height: 80vh;
+    /* ✅ scale with viewport height */
+    display: flex;
+    flex-direction: column;
+    padding: 1rem;
+    margin: 0 auto;
+    box-sizing: border-box;
+}
+
+/* Recipient row */
+.recipient-row {
+    display: flex;
+    flex-wrap: nowrap;
+    /* ✅ force single row on normal screens */
+    gap: 0.4rem;
+    margin-bottom: 1rem;
+}
+
+.recipient-input,
+.connect-button,
+.delete-button,
+.refresh-button,
+.disconnect-button {
+    flex: 1 1 auto;
+    min-width: 70px;
+    /* ✅ smaller minimum */
+    font-size: 0.8rem;
+    /* ✅ reduced font size */
+    padding: 0.35rem 0.6rem;
+    /* ✅ tighter padding */
+}
+
+.recipient-input {
+    border: 1px solid hsl(0, 0%, 75%);
+    border-radius: 6px;
+    color: hsl(220, 15%, 20%);
+    background: hsl(0, 0%, 100%);
+}
+
+.recipient-input::placeholder {
+    color: hsl(220, 10%, 60%);
+}
+
+.connect-button,
+.refresh-button,
+.disconnect-button {
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 0.8rem;
+    color: white;
+}
+
+/* Delete button smaller + consistent */
+.delete-button {
+    background: hsl(280, 60%, 50%);
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    color: white;
+    flex-shrink: 1;
+}
+
+.delete-button:hover {
+    background: hsl(280, 60%, 40%);
+}
+
+.connect-button {
+    background: hsl(220, 80%, 55%);
+}
+
+.connect-button:hover {
+    background: hsl(220, 80%, 45%);
+}
+
+.refresh-button {
+    background: hsl(45, 90%, 55%);
+}
+
+.refresh-button:hover {
+    background: hsl(45, 90%, 45%);
+}
+
+.disconnect-button {
+    background: hsl(0, 70%, 50%);
+}
+
+.disconnect-button:hover {
+    background: hsl(0, 70%, 40%);
+}
+
+.chat-window {
+    flex: 1;
+    border: 1px solid hsl(0, 0%, 75%);
+    border-radius: 6px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding: 0.75rem;
+    background: hsl(0, 0%, 100%);
+    min-height: 0;
+    /* ✅ allow flexbox to control height */
+    max-height: 100%;
+    /* ✅ never overflow parent */
+}
+
+.timestamp {
+    font-size: 0.75rem;
+    color: hsl(0, 0%, 50%);
+    margin-left: 8px;
+}
+
+
+.messages {
+    flex: 1;
+    overflow-y: auto;
+    margin-bottom: 0.75rem;
+}
+
+.message {
+    font-size: 0.95rem;
+    margin-bottom: 0.4rem;
+    color: hsl(220, 20%, 15%);
+}
+
+.message .from {
+    font-weight: bolder;
+}
+
+.message.me .from {
+    color: hsl(210, 90%, 40%);
+    font-weight: 600;
+}
+
+
+.message.them .from {
+    color: hsl(0, 70%, 40%);
+    font-weight: 600;
+}
+
+.message.system {
+    color: hsl(260, 60%, 45%);
+    font-weight: bold;
+    text-align: center;
+}
+
+.from {
+    font-weight: bold;
+    color: hsl(220, 80%, 30%);
+}
+
+.input-row {
+    display: flex;
+    gap: 0.5rem;
+}
+
+
+.message-input {
+    flex: 1;
+    padding: 0.5rem;
+    border: 1px solid hsl(0, 0%, 75%);
+    border-radius: 6px;
+    color: hsl(220, 15%, 20%);
+    background: hsl(0, 0%, 100%);
+}
+
+.message-input::placeholder {
+    color: hsl(220, 10%, 60%);
+}
+
+.send-button {
+    background: hsl(140, 60%, 40%);
+    color: white;
+    border: none;
+    padding: 0.5rem 1rem;
+    border-radius: 6px;
+    cursor: pointer;
+}
+
+.send-button:hover {
+    background: hsl(140, 60%, 30%);
+}
+
+/* Responsive fallback for very small screens */
+@media (max-width: 500px) {
+    .recipient-row {
+        flex-wrap: wrap;
+        /* ✅ allow wrapping only on small screens */
+    }
+
+    .recipient-input {
+        flex: 1 1 100%;
+    }
+
+    .connect-button,
+    .delete-button,
+    .refresh-button,
+    .disconnect-button {
+        flex: 1 1 48%;
+    }
+}

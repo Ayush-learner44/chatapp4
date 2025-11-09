@@ -1,0 +1,61 @@
+.page {
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: hsl(220, 20%, 95%);
+}
+
+.card {
+    background: hsl(0, 0%, 100%);
+    padding: 2rem;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px hsl(0, 0%, 0%, 0.15);
+    width: 380px;
+    text-align: center;
+}
+
+.title {
+    font-size: 1.8rem;
+    font-weight: bold;
+    margin-bottom: 1.5rem;
+    color: hsl(220, 15%, 20%);
+}
+
+.input {
+    width: 100%;
+    padding: 0.6rem;
+    margin-bottom: 1rem;
+    border: 1px solid hsl(0, 0%, 80%);
+    border-radius: 6px;
+    font-size: 1rem;
+    color: hsl(220, 15%, 20%);
+    background: hsl(0, 0%, 100%);
+}
+
+.input::placeholder {
+    color: hsl(220, 10%, 60%);
+}
+
+.button {
+    width: 100%;
+    padding: 0.7rem;
+    background: hsl(220, 80%, 55%);
+    color: hsl(0, 0%, 100%);
+    border: none;
+    border-radius: 6px;
+    font-size: 1rem;
+    cursor: pointer;
+    margin-bottom: 1rem;
+}
+
+.button:hover {
+    background: hsl(220, 80%, 45%);
+}
+
+.link {
+    color: hsl(220, 80%, 55%);
+    cursor: pointer;
+    font-size: 0.95rem;
+    text-decoration: underline;
+}

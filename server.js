@@ -1,0 +1,95 @@
+import dotenv from "dotenv";
+dotenv.config({ path: ".env.local" });
+
+import { createServer } from "node:http";
+import next from "next";
+import { Server } from "socket.io";
+import { MongoClient } from "mongodb";
+
+const dev = process.env.NODE_ENV !== "production";
+const port = process.env.PORT || 3000;
+const hostname = "0.0.0.0";
+
+// MongoDB client reuse
+const uri = process.env.MONGODB_URI;
+if (!uri) {
+    console.error("MONGODB_URI missing. Check .env.local");
+    process.exit(1);
+}
+let client;
+let clientPromise;
+if (!global._mongoClientPromise) {
+    client = new MongoClient(uri);
+    global._mongoClientPromise = client.connect();
+}
+clientPromise = global._mongoClientPromise;
+
+// Next.js app
+const app = next({ dev, hostname, port });
+const handler = app.getRequestHandler();
+
+app.prepare().then(() => {
+    const httpServer = createServer((req, res) => {
+        handler(req, res);
+    });
+
+    // Global users map (runtime only, not MongoDB)
+    const users = {}; // { username: socket.id }
+
+    const io = new Server(httpServer, {
+        cors: { origin: "*" },
+    });
+
+    io.on("connection", (socket) => {
+        console.log("✅ Socket connected:", socket.id);
+
+        // Register user on connection
+        socket.on("register-user", (username) => {
+            users[username] = socket.id;
+            socket.username = username;
+            console.log(`Registered ${username} with socket ${socket.id}`);
+        });
+
+        // Handle private messaging
+        socket.on("send-message", async ({ sender, receiver, text }) => {
+            try {
+                const c = await clientPromise;
+                const db = c.db("chatapp");
+                const messages = db.collection("messages");
+
+                // Store message in MongoDB
+                await messages.insertOne({
+                    sender,
+                    receiver,
+                    text,
+                    timestamp: new Date(),
+                });
+
+                // Deliver to receiver if online
+                const receiverSocketId = users[receiver];
+                if (receiverSocketId) {
+                    io.to(receiverSocketId).emit("receive-message", {
+                        sender,
+                        text,
+                        time: new Date().toISOString(),
+                    });
+                }
+            } catch (err) {
+                console.error("Message error:", err);
+                socket.emit("error-message", { text: "Server error while sending message" });
+            }
+        });
+
+        // Clean up on disconnect
+        socket.on("disconnect", () => {
+            if (socket.username) {
+                delete users[socket.username];
+                console.log(`❌ ${socket.username} disconnected`);
+            }
+        });
+    });
+
+    httpServer.listen(port, hostname, () => {
+        console.log(`🚀 Ready on http://${hostname}:${port}`);
+    });
+});
