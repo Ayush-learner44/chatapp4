@@ -28,7 +28,7 @@ The application is structured with a Next.js frontend, API routes for backend lo
 ### 1. Clone the repository
 ```bash
 git clone <repo-url>
-cd chatapp2
+cd chatapp
 
 ```
 ### 2. Install dependencies
@@ -53,7 +53,6 @@ Open [http://localhost:3000](http://localhost:3000) in your browser.
 
 ---
 
-## Screenshots
 ## Screenshots
 
 ### Login Page
