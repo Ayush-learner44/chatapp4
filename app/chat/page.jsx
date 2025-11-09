@@ -22,6 +22,15 @@ function ChatPageInner() {
     const [chat, setChat] = useState([]);
     const [users, setUsers] = useState([]);
 
+    const filteredChat = chat.filter(
+        (c) =>
+            c.sender === username ||
+            c.sender === recipient ||
+            c.receiver === recipient ||
+            c.sender === "system"
+    );
+
+
     // scroll to bottom whenever chat updates
     useEffect(() => {
         if (messagesEndRef.current) {
@@ -110,6 +119,8 @@ function ChatPageInner() {
                 ]);
             });
 
+
+
             socketRef.current.on("error-message", (data) => {
                 alert(data.text);
                 setConnected(false);
@@ -160,8 +171,9 @@ function ChatPageInner() {
                 sender: m.sender,
                 text: m.text,
                 time: m.time
-            })));
+            }))); // ✅ replace, not append
         }
+
 
         console.log("emitting join", { sender: username, receiver: recipient });
         socketRef.current.emit("join", { sender: username, receiver: recipient });
@@ -190,8 +202,8 @@ function ChatPageInner() {
         if (res.ok) {
             console.log("emitting send-message", msg);
             socketRef.current.emit("send-message", msg);
-
             setMessage("");
+
         } else {
             const data = await res.json();
             alert(data.message || "Message failed to send");
@@ -229,6 +241,8 @@ function ChatPageInner() {
                                 ))}
                         </datalist>
 
+
+
                         <button onClick={connect} className="connect-button">Connect</button>
                         <button onClick={() => setChat([])} className="refresh-button">Clear</button>
                         <button
@@ -256,7 +270,13 @@ function ChatPageInner() {
 
                     <div className="chat-window">
                         <div className="messages">
-                            {chat.map((c, i) => {
+                            {chat.filter(
+                                (c) =>
+                                    c.sender === recipient ||
+                                    c.sender === username ||   // ✅ show my own messages
+                                    c.receiver === recipient ||
+                                    c.sender === "system"
+                            ).map((c, i) => {
                                 const label = c.sender === username ? "me" : c.sender;
                                 const time = c.time
                                     ? new Date(c.time).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })

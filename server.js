@@ -50,15 +50,9 @@ app.prepare().then(() => {
         });
 
         socket.on("join", ({ sender, receiver }) => {
-            // Tell the sender they are connected
             socket.emit("joined", { with: receiver, time: new Date().toISOString() });
-
-            // Tell the receiver they are connected too
-            const receiverSocketId = users[receiver];
-            if (receiverSocketId) {
-                io.to(receiverSocketId).emit("joined", { with: sender, time: new Date().toISOString() });
-            }
         });
+
 
 
 
@@ -71,17 +65,6 @@ app.prepare().then(() => {
         // Handle private messaging
         socket.on("send-message", async ({ sender, receiver, text }) => {
             try {
-                const c = await clientPromise;
-                const db = c.db("chatapp");
-                const messages = db.collection("messages");
-
-                await messages.insertOne({
-                    sender,
-                    receiver,
-                    text,
-                    timestamp: new Date(),
-                });
-
                 const msgPayload = {
                     sender,
                     receiver,
@@ -100,6 +83,9 @@ app.prepare().then(() => {
                 socket.emit("error-message", { text: "Server error while sending message" });
             }
         });
+
+
+
 
         // Clean up on disconnect
         socket.on("disconnect", () => {
