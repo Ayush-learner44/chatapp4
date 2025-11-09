@@ -132,7 +132,7 @@ function ChatPageInner() {
             // Ask server for online users
             socketRef.current.emit("get-online-users");
 
-            // ✅ Just listen for online-users updates (no need to emit anymore)
+            // Just listen for online-users updates
             socketRef.current.on("online-users", (list) => {
                 setOnlineUsers(list);
             });
@@ -162,7 +162,7 @@ function ChatPageInner() {
     }, []);
 
 
-    // ✅ Register user once username is set
+    // Register user once username is set
     useEffect(() => {
         if (socketRef.current && username) {
             console.log("registering user", username);
@@ -170,7 +170,7 @@ function ChatPageInner() {
         }
     }, [username]);
 
-    // ✅ Connect handler
+    // Connect handler
     const connect = async () => {
         if (!recipient.trim()) {
             alert("Enter a recipient username");
@@ -184,7 +184,7 @@ function ChatPageInner() {
                 sender: m.sender,
                 text: m.text,
                 time: m.time
-            }))); // ✅ replace, not append
+            }))); // replace, not append
         }
 
 
@@ -239,20 +239,6 @@ function ChatPageInner() {
             <div className="chat-center">
                 <div className="chat-card">
                     <div className="recipient-row">
-                        {/* <input
-                            list="user-list"
-                            placeholder="Recipient"
-                            value={recipient}
-                            onChange={(e) => setRecipient(e.target.value)}
-                            className="recipient-input"
-                        />
-                        <datalist id="user-list">
-                            {users
-                                .filter((u) => u !== username)
-                                .map((u, i) => (
-                                    <option key={i} value={u} />
-                                ))}
-                        </datalist> */}
 
                         <select
                             value={recipient}
@@ -304,7 +290,7 @@ function ChatPageInner() {
                             {chat.filter(
                                 (c) =>
                                     c.sender === recipient ||
-                                    c.sender === username ||   // ✅ show my own messages
+                                    c.sender === username ||   // show my own messages
                                     c.receiver === recipient ||
                                     c.sender === "system"
                             ).map((c, i) => {

@@ -40,7 +40,6 @@ app.prepare().then(() => {
     });
 
     io.on("connection", (socket) => {
-        console.log("✅ Socket connected:", socket.id);
 
         const broadcastOnlineUsers = () => {
             io.emit("online-users", Object.keys(users));
@@ -50,7 +49,6 @@ app.prepare().then(() => {
         socket.on("register-user", (username) => {
             users[username] = socket.id;
             socket.username = username;
-            console.log(`Registered ${username} with socket ${socket.id}`);
             broadcastOnlineUsers(); // push update
         });
 
@@ -84,9 +82,6 @@ app.prepare().then(() => {
                 socket.emit("error-message", { text: "Server error while sending message" });
             }
         });
-
-
-
 
         // Clean up on disconnect
         socket.on("disconnect", () => {
