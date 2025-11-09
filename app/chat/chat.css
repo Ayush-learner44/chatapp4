@@ -24,7 +24,6 @@
 
 .home-button {
     background-color: hsl(0, 0%, 40%);
-    /* medium gray */
     color: white;
     border: none;
     padding: 6px 14px;
@@ -36,10 +35,8 @@
 
 .home-button:hover {
     background-color: hsl(0, 0%, 25%);
-    /* darker gray on hover */
 }
 
-/* Inline username field in top bar */
 .top-username-input {
     width: 10rem;
     padding: 0.4rem;
@@ -55,16 +52,12 @@
 
 .profile-label {
     font-weight: 700;
-    /* bolder text */
     color: hsl(0, 0%, 20%);
-    /* dark gray for contrast */
     background-color: hsl(0, 0%, 90%);
-    /* light gray background */
     padding: 4px 10px;
     border-radius: 12px;
     font-size: 0.95rem;
 }
-
 
 .profile-badge {
     background: #f0f0f0;
@@ -73,7 +66,6 @@
     font-size: 0.9rem;
     color: #333;
 }
-
 
 /* Chat card should shrink on small screens */
 .chat-card {
@@ -107,11 +99,8 @@
 .disconnect-button {
     flex: 1 1 auto;
     min-width: 70px;
-    /* ✅ smaller minimum */
     font-size: 0.8rem;
-    /* ✅ reduced font size */
     padding: 0.35rem 0.6rem;
-    /* ✅ tighter padding */
 }
 
 .recipient-input {
@@ -135,7 +124,6 @@
     color: white;
 }
 
-/* Delete button smaller + consistent */
 .delete-button {
     background: hsl(280, 60%, 50%);
     border: none;
@@ -194,7 +182,6 @@
     margin-left: 8px;
 }
 
-
 .messages {
     flex: 1;
     overflow-y: auto;
@@ -216,7 +203,6 @@
     font-weight: 600;
 }
 
-
 .message.them .from {
     color: hsl(0, 70%, 40%);
     font-weight: 600;
@@ -233,14 +219,22 @@
     color: hsl(220, 80%, 30%);
 }
 
+/* ✅ Updated input-row fix */
 .input-row {
     display: flex;
     gap: 0.5rem;
+    flex-shrink: 0;
+    /* never shrink out of view */
+    width: 100%;
+    /* stay inside chat-window */
+    box-sizing: border-box;
 }
-
 
 .message-input {
     flex: 1;
+    /* stretch to fill remaining space */
+    min-width: 0;
+    /* allow shrinking without overflow */
     padding: 0.5rem;
     border: 1px solid hsl(0, 0%, 75%);
     border-radius: 6px;
@@ -259,6 +253,8 @@
     padding: 0.5rem 1rem;
     border-radius: 6px;
     cursor: pointer;
+    flex-shrink: 0;
+    /* button keeps its size */
 }
 
 .send-button:hover {
@@ -269,7 +265,7 @@
 @media (max-width: 500px) {
     .recipient-row {
         flex-wrap: wrap;
-        /* ✅ allow wrapping only on small screens */
+        /* allow wrapping only on small screens */
     }
 
     .recipient-input {
@@ -281,5 +277,16 @@
     .refresh-button,
     .disconnect-button {
         flex: 1 1 48%;
+    }
+}
+
+/* ✅ Extra small screen fix for input-row */
+@media (max-width: 400px) {
+    .input-row {
+        flex-direction: column;
+    }
+
+    .send-button {
+        width: 100%;
     }
 }

@@ -43,6 +43,51 @@ function ChatPageInner() {
             .catch(err => console.error("Failed to fetch users", err));
     }, []);
 
+    //initialize only once
+    // useEffect(() => {
+    //     if (!socketRef.current) {
+    //         socketRef.current = io();
+
+    //         socketRef.current.on("joined", (data) => {
+    //             console.log("joined event received", data);
+    //             setChat((prev) => [
+    //                 ...prev,
+    //                 { sender: "system", text: `Connected with ${data.with}`, time: data.time || new Date().toISOString() }
+    //             ]);
+    //             setConnected(true);
+    //         });
+
+    //         socketRef.current.on("receive-message", (data) => {
+    //             console.log("receive-message event received", data);
+
+    //             setChat((prev) => [
+    //                 ...prev,
+    //                 { sender: data.sender, text: data.text, time: data.time || new Date().toISOString() }
+    //             ]);
+
+    //         });
+
+
+    //         socketRef.current.on("error-message", (data) => {
+    //             alert(data.text);
+    //             setConnected(false);
+    //         });
+
+    //         socketRef.current.on("disconnect", () => {
+    //             console.log("❌ Socket disconnected");
+    //             setChat((prev) => [
+    //                 ...prev,
+    //                 { sender: "system", text: "You disconnected", time: new Date().toISOString() }
+    //             ]);
+    //             setConnected(false);
+    //         });
+    //     }
+
+    //     return () => {
+    //         socketRef.current && socketRef.current.disconnect();
+    //     };
+    // }, []);
+
     // Initialize socket once
     useEffect(() => {
         if (!socketRef.current) {
@@ -59,14 +104,11 @@ function ChatPageInner() {
 
             socketRef.current.on("receive-message", (data) => {
                 console.log("receive-message event received", data);
-
                 setChat((prev) => [
                     ...prev,
                     { sender: data.sender, text: data.text, time: data.time || new Date().toISOString() }
                 ]);
-
             });
-
 
             socketRef.current.on("error-message", (data) => {
                 alert(data.text);
@@ -75,25 +117,26 @@ function ChatPageInner() {
 
             socketRef.current.on("disconnect", () => {
                 console.log("❌ Socket disconnected");
-                setConnected(false);
-            });
-
-            socketRef.current.on("disconnect", () => {
                 setChat((prev) => [
                     ...prev,
                     { sender: "system", text: "You disconnected", time: new Date().toISOString() }
                 ]);
                 setConnected(false);
             });
-
-
-
         }
 
         return () => {
-            socketRef.current && socketRef.current.disconnect();
+            if (socketRef.current) {
+                socketRef.current.off("joined");
+                socketRef.current.off("receive-message");
+                socketRef.current.off("error-message");
+                socketRef.current.off("disconnect");
+                socketRef.current.disconnect();
+                socketRef.current = null;
+            }
         };
     }, []);
+
 
     // ✅ Register user once username is set
     useEffect(() => {

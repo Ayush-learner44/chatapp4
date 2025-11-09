@@ -50,18 +50,21 @@ app.prepare().then(() => {
         });
 
         socket.on("join", ({ sender, receiver }) => {
-
+            // Tell the sender they are connected
             socket.emit("joined", { with: receiver, time: new Date().toISOString() });
 
+            // Tell the receiver they are connected too
             const receiverSocketId = users[receiver];
-
+            if (receiverSocketId) {
+                io.to(receiverSocketId).emit("joined", { with: sender, time: new Date().toISOString() });
+            }
         });
+
 
 
         // Handle leave (disconnect from recipient but keep socket alive)
         socket.on("leave", ({ sender, receiver }) => {
 
-            const receiverSocketId = users[receiver];
 
         });
 

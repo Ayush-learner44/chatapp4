@@ -1,5 +1,6 @@
 // pages/api/register.js
 import { MongoClient } from "mongodb";
+import bcrypt from "bcrypt";
 
 const uri = process.env.MONGODB_URI;
 let client;
@@ -18,10 +19,10 @@ export default async function handler(req, res) {
         const users = db.collection("users");
 
         if (req.method === "POST") {
-            const { username } = req.body;
+            const { username, password } = req.body;
 
-            if (!username || !username.trim()) {
-                return res.status(400).json({ message: "Username required" });
+            if (!username?.trim() || !password?.trim()) {
+                return res.status(400).json({ message: "Username and password required" });
             }
 
             const existing = await users.findOne({ username });
@@ -29,7 +30,9 @@ export default async function handler(req, res) {
                 return res.status(400).json({ message: "Username already exists" });
             }
 
-            await users.insertOne({ username, createdAt: new Date() });
+            const hash = await bcrypt.hash(password, 10);
+            await users.insertOne({ username, passwordHash: hash, createdAt: new Date() });
+
             return res.status(200).json({ message: "User registered" });
         }
 
