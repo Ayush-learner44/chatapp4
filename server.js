@@ -50,23 +50,19 @@ app.prepare().then(() => {
         });
 
         socket.on("join", ({ sender, receiver }) => {
-            console.log(`${sender} joined chat with ${receiver}`);
+
             socket.emit("joined", { with: receiver, time: new Date().toISOString() });
 
             const receiverSocketId = users[receiver];
-            if (receiverSocketId) {
-                io.to(receiverSocketId).emit("user-joined", { username: sender });
-            }
+
         });
 
 
         // Handle leave (disconnect from recipient but keep socket alive)
         socket.on("leave", ({ sender, receiver }) => {
-            console.log(`${sender} left chat with ${receiver}`);
+
             const receiverSocketId = users[receiver];
-            if (receiverSocketId) {
-                io.to(receiverSocketId).emit("user-left", { username: sender });
-            }
+
         });
 
         // Handle private messaging

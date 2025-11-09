@@ -86,19 +86,7 @@ function ChatPageInner() {
                 setConnected(false);
             });
 
-            socketRef.current.on("user-left", (data) => {
-                setChat((prev) => [
-                    ...prev,
-                    { sender: "system", text: `${data.username} left the chat`, time: new Date().toISOString() }
-                ]);
-            });
 
-            socketRef.current.on("user-joined", (data) => {
-                setChat((prev) => [
-                    ...prev,
-                    { sender: "system", text: `${data.username} joined the chat`, time: new Date().toISOString() }
-                ]);
-            });
 
         }
 
