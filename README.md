@@ -99,7 +99,6 @@ The project is organized into three main layers: **Frontend**, **Backend (API + 
                 | /api/login        |
                 | /api/users        |
                 | /api/message      |
-                | /api/messages     |
                 | /api/deleteMsgs   |
                 +---------+---------+
                           |
